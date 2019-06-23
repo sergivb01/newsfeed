@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"time"
 
-	"newsfeed.sergivos.dev/platform/newsfeed"
+	"github.com/sergivb01/newsfeed/platform/newsfeed"
 )
 
 func main() {
