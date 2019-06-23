@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"time"
 
 	"github.com/sergivb01/newsfeed/platform/newsfeed"
@@ -56,16 +55,12 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(len(items))
 
-	fmt.Printf("Items: %T\nItem: %T\n", items, items[0])
-
-	b, err := json.Marshal(items)
+	b, err := json.Marshal(wired)
 	if err != nil {
-		fmt.Println("items arr", err)
-	}
-
-	if err := ioutil.WriteFile("temp.json", b, 0644); err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(string(b))
 
 }
