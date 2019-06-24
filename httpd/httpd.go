@@ -11,9 +11,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sergivb01/newsfeed/httpd/client"
 	"github.com/sergivb01/newsfeed/httpd/routes"
 	"github.com/sergivb01/newsfeed/httpd/routes/api"
 	"github.com/sergivb01/newsfeed/httpd/utils"
+	"github.com/sergivb01/newsfeed/news"
 )
 
 func router() *http.ServeMux {
@@ -49,11 +51,11 @@ func newHTTPServer(done chan bool, logger *log.Logger) {
 
 	funcMap := template.FuncMap{
 		"checkIfValid": func(x int) bool {
-			return x%4 == 0 || x == 0
+			return x%3 == 0 || x == 0
 		},
 		"checkIfValid2": func(x int) bool {
 			x++
-			return x%4 == 0 && x != 0
+			return x%3 == 0 && x != 0
 		},
 		"rndString": func() string {
 			b := make([]byte, 8)
@@ -61,6 +63,13 @@ func newHTTPServer(done chan bool, logger *log.Logger) {
 				b[i] = charset[seededRand.Intn(len(charset))]
 			}
 			return string(b)
+		},
+		"renderCard": func(item news.Item) map[string]interface{} {
+			src := client.CLI.GetSourceByName(item.Source)
+			return map[string]interface{}{
+				"Item":   item,
+				"Source": src,
+			}
 		},
 	}
 

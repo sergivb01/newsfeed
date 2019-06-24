@@ -8,9 +8,9 @@ import (
 
 	"github.com/sergivb01/newsfeed/httpd/client"
 	"github.com/sergivb01/newsfeed/httpd/store"
+	"github.com/sergivb01/newsfeed/news/sources"
 
 	"github.com/sergivb01/newsfeed/news"
-	"github.com/sergivb01/newsfeed/sources"
 )
 
 var (
@@ -21,12 +21,13 @@ var (
 func main() {
 	logger = log.New(os.Stdout, "http: ", log.LstdFlags)
 
-	client.NewClient(time.Second*10, map[string]news.Source{
-		"wired":      sources.WiredSource,
-		"verge":      sources.TheVergeSource,
-		"gizmodo":    sources.GizmodoSource,
-		"hackernews": sources.HackerNewsSource,
-		"nytimes":    sources.NYTimesSource,
+	client.NewClient(time.Second*10, []news.Source{
+		sources.MicrosiervosSource,
+		sources.WiredSource,
+		sources.TheVergeSource,
+		sources.GizmodoSource,
+		sources.HackerNewsSource,
+		sources.NYTimesSource,
 	})
 	client.CLI.UseStore(store.InMemory())
 

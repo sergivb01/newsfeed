@@ -11,17 +11,15 @@ import (
 var Templates *template.Template
 
 type indexPage struct {
-	Items   []news.Item
-	Sources map[string]news.Source
-	Len     int
+	Items []news.Item
+	Len   int
 }
 
 func HandleIndex(w http.ResponseWriter, r *http.Request) {
 	items := client.CLI.Store.Get()
 	vars := indexPage{
-		Items:   items,
-		Sources: client.CLI.Sources,
-		Len:     len(items),
+		Items: items,
+		Len:   len(items),
 	}
 
 	if err := Templates.ExecuteTemplate(w, "index", vars); err != nil {
