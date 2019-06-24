@@ -8,6 +8,7 @@ import (
 	"github.com/sergivb01/newsfeed/news"
 )
 
+// CLI stores a client
 var CLI client
 
 type client struct {
