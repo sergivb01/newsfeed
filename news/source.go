@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 type parserFunc func([]byte) ([]Item, error)
@@ -14,8 +13,6 @@ type Source struct {
 	Title    string `json:"title"`
 	Homepage string `json:"homepage"`
 	RSS      string `json:"rss"`
-
-	LastFetched time.Time `json:"lastFetched"`
 
 	Parser parserFunc `json:"-"`
 }
@@ -47,8 +44,6 @@ func (s *Source) GetItems() ([]Item, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	s.LastFetched = time.Now()
 
 	return items, nil
 }

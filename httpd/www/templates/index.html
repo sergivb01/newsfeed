@@ -1,0 +1,72 @@
+{{ define "index" }}
+
+{{ template "head" . }}
+<style>
+  /* .row {
+    height: 300px;
+  } */
+
+  .column {
+    height: 100%;
+  }
+
+  .eq-card.ui.card {
+    flex: 1;
+    /* Shrink and grow according to available height */
+    flex-basis: 0;
+  }
+</style>
+
+<div class="ui grid container">
+
+  {{ range $index, $item := .Items }}
+  {{ if checkIfValid $index}}<div class="row">{{ end }}
+
+    <div class="four wide column">
+      <div class="ui card fluid eq-card">
+        <div class="content">
+          <div class="header ">{{ .Title }}</div>
+          <div class="meta">
+            <span>{{ .PublishDate.Format "02 Jan 15:04" }}</span>
+            <a href="{{ with (index $.Sources .Source) }}{{ .Homepage }}{{ end }}">
+              {{ with (index $.Sources .Source) }}{{ .Title }}{{ end }}
+            </a>
+          </div>
+          <div class="description">
+            <p>{{ .Description }}</p>
+          </div>
+        </div>
+        <a class="ui bottom attached primary button" href="{{ .Link }}">
+          <i class="icon globe"></i>
+          Read in {{ with (index $.Sources .Source) }}{{ .Title }}{{ end }}
+        </a>
+      </div>
+    </div> <!-- end column -->
+
+    {{ if checkIfValid2 $index}}</div>{{ end }}
+
+  {{ end }}
+
+</div>
+
+{{ template "tail" . }}
+<script>
+  $(document).ready(function ($) {
+    // TODO: For crazy loading images
+    // document.querySelectorAll('.hover-me').forEach(el => {
+    //   el.addEventListener('mouseover', () => {
+    //     const id = el.getAttribute('data-target');
+    //     if (id === undefined || id === "") {
+    //       return
+    //     }
+    //     const img = document.getElementById(id);
+    //     const src = img.getAttribute('data-original');
+    //     console.log(id, img, src)
+
+    //     img.setAttribute("data-original", "")
+    //     img.setAttribute("src", src)
+    //   })
+    // })
+  });
+</script>
+{{ end }}
