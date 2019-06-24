@@ -15,7 +15,6 @@ type Source struct {
 	Homepage string `json:"homepage"`
 	RSS      string `json:"rss"`
 
-	LastUpdated time.Time `json:"lastUpdated"`
 	LastFetched time.Time `json:"lastFetched"`
 
 	Parser parserFunc `json:"-"`

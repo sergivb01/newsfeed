@@ -64,9 +64,14 @@ var HackerNewsSource = news.Source{
 				cut = 175
 			}
 
+			link := jsonRes.URL
+			if link == "" {
+				link = fmt.Sprintf("https://news.ycombinator.com/item?id=%d", id)
+			}
+
 			items = append(items, news.Item{
 				Title:       jsonRes.Title,
-				Link:        "awdad",
+				Link:        link,
 				PublishDate: time.Unix(jsonRes.Time, 0),
 				Description: jsonRes.Text[:cut],
 			})

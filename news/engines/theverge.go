@@ -36,16 +36,10 @@ var TheVergeSource = news.Source{
 		for _, item := range res.Items {
 			pubDate, _ := time.Parse(time.RFC1123Z, item.PublishDate)
 
-			cut := len(item.Content.Text)
-			if cut > 175 {
-				cut = 175
-			}
-
 			items = append(items, news.Item{
 				Title:       item.Title,
 				Link:        item.Link.Href,
 				PublishDate: pubDate,
-				Description: item.Content.Text[:cut],
 				Thumbnail:   "",
 			})
 		}
