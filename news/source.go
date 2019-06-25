@@ -6,17 +6,29 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
-type parserFunc func(string, []byte) ([]Item, error)
+var timeLayouts = []string{
+	time.RFC1123Z,
+	time.RFC1123,
+	time.RFC3339,
+}
 
 // Source defines a new news website source
 type Source struct {
-	Title        string `json:"title"`
-	Shortname    string `json:"shortName"`
-	Homepage     string `json:"homepage"`
-	RSS          string `json:"rss"`
-	WithChannels bool   `json:"withChannels"`
+	Title        string `json:"title" yaml:"title"`
+	Shortname    string `json:"shortName" yaml:"shortName"`
+	Homepage     string `json:"homepage" yaml:"homepage"`
+	RSS          string `json:"rss" yaml:"rss"`
+	WithChannels bool   `json:"withChannels" yaml:"withChannels"`
+}
+
+func FromYAML(b []byte) *Source {
+	var s Source
+	yaml.Unmarshal(b, &s)
+	return &s
 }
 
 // Fetch returns an array of bytes from the fetched RSS feed or an error
@@ -42,47 +54,37 @@ func (s *Source) GetItems() ([]Item, error) {
 		return nil, fmt.Errorf("couldn't fetch items for %s: %v", s.Title, err)
 	}
 
-	parser := withoutChannels
+	parser := parseWithoutChannels
 	if s.WithChannels {
-		parser = withChannels
+		parser = parseWithChannels
 	}
 
-	items, err := parser(s.Shortname, b)
-	if err != nil {
-		return nil, err
-	}
-
-	return items, nil
+	return parser(s.Shortname, b)
 }
 
-func withChannels(srcName string, b []byte) ([]Item, error) {
-	var res struct {
-		Channel struct {
-			Items []struct {
-				Title       string `xml:"title"`
-				Link        string `xml:"link"`
-				PublishDate string `xml:"pubDate"`
-				Description string `xml:"description"`
-				Thumbnail   struct {
-					URL string `xml:"url,attr"`
-				} `xml:"thumbnail"`
-			} `xml:"item"`
-		} `xml:"channel"`
+func parseTime(rawTime string) time.Time {
+	for _, layout := range timeLayouts {
+		if t, err := time.Parse(layout, rawTime); err == nil {
+			return t
+		}
 	}
+	var res time.Time
+	return res
+}
 
+func parseWithChannels(srcName string, b []byte) ([]Item, error) {
+	var res withChannels
 	if err := xml.Unmarshal(b, &res); err != nil {
 		return nil, fmt.Errorf("error while unmarshaling bytes: %v", err)
 	}
-	var items []Item
 
+	var items []Item
 	for _, rawItem := range res.Channel.Items {
-		pubDate, _ := time.Parse(time.RFC1123Z, rawItem.PublishDate)
 		item := Item{
 			Title:       rawItem.Title,
 			Link:        rawItem.Link,
-			PublishDate: pubDate,
+			PublishDate: parseTime(rawItem.PublishDate),
 			Description: rawItem.Description,
-			Thumbnail:   rawItem.Thumbnail.URL,
 			Source:      srcName,
 		}
 		item.Clear()
@@ -92,31 +94,18 @@ func withChannels(srcName string, b []byte) ([]Item, error) {
 	return items, nil
 }
 
-func withoutChannels(srcName string, b []byte) ([]Item, error) {
-	var res struct {
-		Items []struct {
-			PublishDate string `xml:"published"`
-			Title       string `xml:"title"`
-			Content     struct {
-				Text string `xml:",chardata"`
-			} `xml:"content"`
-			Link struct {
-				Href string `xml:"href,attr"`
-			} `xml:"link"`
-		} `xml:"entry"`
-	}
-
+func parseWithoutChannels(srcName string, b []byte) ([]Item, error) {
+	var res withoutChannels
 	if err := xml.Unmarshal(b, &res); err != nil {
 		return nil, fmt.Errorf("error while unmarshaling bytes: %v", err)
 	}
 
 	var items []Item
 	for _, rawItem := range res.Items {
-		pubDate, _ := time.Parse(time.RFC1123, rawItem.PublishDate)
 		item := Item{
 			Title:       rawItem.Title,
 			Link:        rawItem.Link.Href,
-			PublishDate: pubDate,
+			PublishDate: parseTime(rawItem.PublishDate),
 			Description: rawItem.Content.Text,
 			Source:      srcName,
 		}

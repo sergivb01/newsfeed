@@ -12,7 +12,6 @@ type Item struct {
 	Link        string    `json:"link"`
 	PublishDate time.Time `json:"published"`
 	Description string    `json:"description"`
-	Thumbnail   string    `json:"thumbnail"`
 	Source      string    `json:"source"`
 }
 

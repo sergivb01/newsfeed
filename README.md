@@ -4,7 +4,7 @@ and organizes the feed into one. It stores the feed into an storage service (cur
 
 # 🎯 TODO:
 - [X] Add [Microsiervos](https://www.microsiervos.com/)
-- [ ] Add a `yaml` configuration file
+- [X] Add a `yaml` configuration file
 - [ ] Add support for flags
 - [ ] Website and/or design
   - [ ] Add a navigation bar

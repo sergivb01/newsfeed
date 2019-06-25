@@ -14,13 +14,9 @@ func (s *MemoryStore) Get() []news.Item {
 }
 
 // Set sets what items are in the storage
-func (s *MemoryStore) Set(items []news.Item) {
+func (s *MemoryStore) Set(items []news.Item) error {
 	s.Items = items
-}
-
-// Size returns the size of the items in the storage
-func (s MemoryStore) Size() int {
-	return len(s.Items)
+	return nil
 }
 
 // InMemory makes a newsfeed in memory

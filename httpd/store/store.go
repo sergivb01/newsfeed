@@ -10,7 +10,5 @@ type Storage interface {
 	// Get returns an array of the stored items
 	Get() []news.Item
 	// Set sets the items in the storage
-	Set([]news.Item)
-	// Size returns how many items are stored
-	Size() int
+	Set([]news.Item) error
 }
