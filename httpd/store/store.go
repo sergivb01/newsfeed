@@ -11,4 +11,5 @@ type Storage interface {
 	Get() []news.Item
 	// Set sets the items in the storage
 	Set([]news.Item) error
+	Size() int
 }

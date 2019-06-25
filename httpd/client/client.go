@@ -102,15 +102,11 @@ func (c *client) FetchSources() error {
 }
 
 func (c client) isEqual(items []news.Item) bool {
+	if len(items) == 0 || c.Store.Size() == 0 || (len(items) != c.Store.Size()) {
+		return false
+	}
+
 	inStore := c.Store.Get()
-	if len(items) == 0 || len(inStore) == 0 {
-		return false
-	}
-
-	if len(items) != len(inStore) {
-		return false
-	}
-
 	for _, v := range items {
 		if !containsElement(inStore, v.Link) {
 			return false

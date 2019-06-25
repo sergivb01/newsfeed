@@ -19,6 +19,10 @@ func (s *MemoryStore) Set(items []news.Item) error {
 	return nil
 }
 
+func (s MemoryStore) Size() int {
+	return len(s.Items)
+}
+
 // InMemory makes a newsfeed in memory
 func InMemory() *MemoryStore {
 	return &MemoryStore{
