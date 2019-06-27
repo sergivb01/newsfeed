@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"gopkg.in/yaml.v2"
 )
 
 var timeLayouts = []string{
@@ -19,19 +17,12 @@ var timeLayouts = []string{
 // Source defines a new news website source
 type Source struct {
 	Title        string `json:"title" yaml:"title"`
-	Shortname    string `json:"shortName" yaml:"shortName"`
 	Homepage     string `json:"homepage" yaml:"homepage"`
 	RSS          string `json:"rss" yaml:"rss"`
 	WithChannels bool   `json:"withChannels" yaml:"withChannels"`
 }
 
-func FromYAML(b []byte) *Source {
-	var s Source
-	yaml.Unmarshal(b, &s)
-	return &s
-}
-
-// Fetch returns an array of bytes from the fetched RSS feed or an error
+// fetch returns an array of bytes from the fetched RSS feed or an error
 func (s Source) fetch() ([]byte, error) {
 	resp, err := http.Get(s.RSS)
 	if err != nil {
@@ -39,12 +30,7 @@ func (s Source) fetch() ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, err
+	return ioutil.ReadAll(resp.Body)
 }
 
 // GetItems fetches the RSS feed, parses the news and returns an slice of items
@@ -59,7 +45,7 @@ func (s *Source) GetItems() ([]Item, error) {
 		parser = parseWithChannels
 	}
 
-	return parser(s.Shortname, b)
+	return parser(s.Title, b)
 }
 
 func parseTime(rawTime string) time.Time {

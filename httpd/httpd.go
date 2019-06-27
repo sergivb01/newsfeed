@@ -4,7 +4,6 @@ import (
 	"context"
 	"html/template"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,10 +30,6 @@ func router() *http.ServeMux {
 	return r
 }
 
-const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
-
 func newHTTPServer(done chan bool, logger *log.Logger) {
 	srv := &http.Server{
 		Addr:         ":80",
@@ -50,19 +45,11 @@ func newHTTPServer(done chan bool, logger *log.Logger) {
 	go gracefulShutdown(done, quit, srv, logger)
 
 	funcMap := template.FuncMap{
-		"checkIfValid": func(x int) bool {
+		"checkValid": func(x int) bool {
 			return x%3 == 0 || x == 0
 		},
-		"checkIfValid2": func(x int) bool {
-			x++
-			return x%3 == 0 && x != 0
-		},
-		"rndString": func() string {
-			b := make([]byte, 8)
-			for i := range b {
-				b[i] = charset[seededRand.Intn(len(charset))]
-			}
-			return string(b)
+		"checkValid2": func(x int) bool {
+			return (x+1)%3 == 0
 		},
 		"renderCard": func(item news.Item) map[string]interface{} {
 			src := client.CLI.GetSourceByName(item.Source)

@@ -31,7 +31,7 @@ func (c *client) UseStore(storage store.Storage) {
 
 func (c *client) GetSourceByName(name string) news.Source {
 	for _, source := range c.Sources {
-		if source.Shortname == name {
+		if source.Title == name {
 			return source
 		}
 	}
@@ -71,7 +71,7 @@ func (c *client) FetchSources() error {
 		go func(src news.Source) {
 			items, err := src.GetItems()
 			if err != nil {
-				log.Printf("error getting items for %s: %v", src.Shortname, err)
+				log.Printf("error getting items for %s: %v", src.Title, err)
 			}
 
 			tempStorage.Lock()

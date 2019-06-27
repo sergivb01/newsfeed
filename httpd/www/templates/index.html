@@ -21,11 +21,11 @@
 
   {{ range $index, $item := .Items }}
 
-  {{ if checkIfValid $index}}<div class="row">{{ end }}
+  {{ if checkValid $index}}<div class="row">{{ end }}
 
     {{ template "card" (renderCard $item) }}
 
-    {{ if checkIfValid2 $index}}</div>{{ end }}
+    {{ if checkValid2 $index}}</div>{{ end }}
 
   {{ end }}
 
