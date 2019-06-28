@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/sergivb01/newsfeed/httpd/client"
 	"github.com/sergivb01/newsfeed/httpd/store"
@@ -20,6 +21,7 @@ func main() {
 			if err := client.CLI.FetchSources(); err != nil {
 				log.Printf("error while fetching sources: %v", err)
 			}
+			time.Sleep(client.CLI.FetchInterval)
 		}
 	}()
 

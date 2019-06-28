@@ -16,7 +16,9 @@ type indexPage struct {
 }
 
 func HandleIndex(w http.ResponseWriter, r *http.Request) {
+	client.CLI.RLock()
 	items := client.CLI.Store.Get()
+	client.CLI.RUnlock()
 	vars := indexPage{
 		Items: items,
 		Len:   len(items),
@@ -26,6 +28,4 @@ func HandleIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// w.Write([]byte("Check out /api/sources, /api/news and /api/client!"))
 }

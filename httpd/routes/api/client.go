@@ -1,9 +1,10 @@
 package api
 
 import (
-	"github.com/sergivb01/newsfeed/httpd/client"
 	"encoding/json"
 	"net/http"
+
+	"github.com/sergivb01/newsfeed/httpd/client"
 )
 
 func HandleClient(w http.ResponseWriter, r *http.Request) {
