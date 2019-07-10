@@ -33,15 +33,18 @@ GET {{host}}/api/news
 - `200 OK`
 - `500 InternalServerError` on error
 ```json
-[
-  {
-    "title": "The 'Super Mario Maker 2' Community Is a Haven of Player Creativity",
-    "link": "https://www.wired.com/story/super-mario-maker-2-community",
-    "published": "2019-07-10T13:00:00Z",
-    "description": "The hallowed halls of Mario have become, in the hands of fans, shrines to the gods of difficulty.",
-    "source": "Wired"
-  }
-]
+{
+  "found": 1,
+  "news": [
+    {
+      "title": "The 'Super Mario Maker 2' Community Is a Haven of Player Creativity",
+      "link": "https://www.wired.com/story/super-mario-maker-2-community",
+      "published": "2019-07-10T13:00:00Z",
+      "description": "The hallowed halls of Mario have become, in the hands of fans, shrines to the gods of difficulty.",
+      "source": "Wired"
+    }
+  ]
+}
 ```
 
 ### 💻 Client
@@ -51,17 +54,10 @@ GET {{host}}/api/client
 - `500 InternalServerError` on error
 ```json
 {
-  "sources": [
-    {
-      "title": "Wired",
-      "homepage": "https://wired.com",
-      "rss": "https://www.wired.com/feed/rss",
-      "withChannels": true
-    }
-  ],
-  "fetchInterval": 10000000000,
-  "lastFetched": "2019-07-10T18:01:43.6479822+02:00",
-  "nextUpdate": "2019-07-10T18:01:53.4002519+02:00"
+  "loadedSources": 6,
+  "fetchInterval": "10s",
+  "lastFetched": "2019-07-10T18:39:59.2294377+02:00",
+  "nextUpdate": "2019-07-10T18:40:08.5508029+02:00"
 }
 ```
 
@@ -71,14 +67,17 @@ GET {{host}}/api/sources
 - `200 OK` on success
 - `500 InternalServerError` on error
 ```json
-[
-  {
-    "title": "Wired",
-    "homepage": "https://wired.com",
-    "rss": "https://www.wired.com/feed/rss",
-    "withChannels": true
-  }
-]
+{
+  "found": 6,
+  "sources": [
+    {
+      "title": "Wired",
+      "homepage": "https://wired.com",
+      "rss": "https://www.wired.com/feed/rss",
+      "withChannels": true
+    }
+  ]
+}
 ```
 
 # 📋 License

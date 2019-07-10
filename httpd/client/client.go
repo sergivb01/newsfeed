@@ -14,21 +14,22 @@ import (
 var CLI client
 
 type client struct {
-	Sources       []news.Source `json:"sources"`
-	FetchInterval time.Duration `json:"fetchInterval"`
+	Sources       []news.Source
+	FetchInterval time.Duration
 
-	LastFetched time.Time `json:"lastFetched"`
-	NextUpdate  time.Time `json:"nextUpdate"`
+	LastFetched time.Time
+	NextUpdate  time.Time
 
-	Store store.Storage `json:"-"`
+	Store store.Storage
 
-	sync.RWMutex `json:"-"`
+	sync.RWMutex
 }
 
 func (c *client) UseStore(storage store.Storage) {
 	c.Store = storage
 }
 
+// * This is being used on the frontend to display "Wired" on each card
 func (c *client) GetSourceByName(name string) news.Source {
 	for _, source := range c.Sources {
 		if source.Title == name {
@@ -38,7 +39,7 @@ func (c *client) GetSourceByName(name string) news.Source {
 	return news.Source{}
 }
 
-// NewClient creates and sets a new client
+// NewClient creates a new client from the yaml configuration file
 func NewClient(filePath string) error {
 	c, err := loadConfig(filePath)
 	if err != nil {
@@ -58,18 +59,21 @@ func NewClient(filePath string) error {
 	return nil
 }
 
+// FetchSources loops around each source and fetches the news. It aggregates all the news
 func (c *client) FetchSources() error {
-	t := time.Now()
 	var tempStorage struct {
 		items []news.Item
 		sync.Mutex
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(len(c.Sources))
+
 	for _, src := range c.Sources {
+		wg.Add(1)
 		go func(src news.Source) {
 			items, err := src.GetItems()
+
+			// not returning an error because I won't care if a single source is down. Not to be bothered to implement channels
 			if err != nil {
 				log.Printf("error getting items for %s: %v", src.Title, err)
 			}
@@ -82,49 +86,15 @@ func (c *client) FetchSources() error {
 	}
 	wg.Wait()
 
-	// "cache" is the same, no need to re-write it into storage
-	if c.isEqual(tempStorage.items) {
-		log.Printf("!!! found == stored, skipping...")
-		return nil
-	}
-
-	log.Printf("??? found != stored, saving...")
 	c.Lock()
 	defer c.Unlock()
 
 	if err := c.Store.Set(tempStorage.items); err != nil {
 		return fmt.Errorf("error settings items to storage: %v", err)
 	}
+
 	c.LastFetched = time.Now()
-	c.NextUpdate = t.Add(c.FetchInterval)
+	c.NextUpdate = time.Now().Add(c.FetchInterval)
 
 	return nil
-}
-
-func (c *client) isEqual(items []news.Item) bool {
-	if len(items) == 0 || c.Store.Size() == 0 || (len(items) != c.Store.Size()) {
-		return false
-	}
-
-	c.RLock()
-	inStore := c.Store.Get()
-	c.RUnlock()
-
-	for _, v := range items {
-		// using URLs because titles could be the same but URLs aren't. No need to create a hash
-		// or any other shit like that. Let's use something I already have and not waste resources
-		if !containsElement(inStore, v.Link) {
-			return false
-		}
-	}
-	return true
-}
-
-func containsElement(items []news.Item, item string) bool {
-	for _, v := range items {
-		if v.Link == item {
-			return true
-		}
-	}
-	return false
 }

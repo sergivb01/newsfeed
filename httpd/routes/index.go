@@ -19,6 +19,7 @@ func HandleIndex(w http.ResponseWriter, r *http.Request) {
 	client.CLI.RLock()
 	items := client.CLI.Store.Get()
 	client.CLI.RUnlock()
+
 	vars := indexPage{
 		Items: items,
 		Len:   len(items),

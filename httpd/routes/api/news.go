@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/sergivb01/newsfeed/httpd/client"
+	"github.com/sergivb01/newsfeed/news"
 )
 
 func HandleNews(w http.ResponseWriter, r *http.Request) {
@@ -12,7 +13,15 @@ func HandleNews(w http.ResponseWriter, r *http.Request) {
 	items := client.CLI.Store.Get()
 	client.CLI.RUnlock()
 
-	b, err := json.Marshal(items)
+	res := struct {
+		Found int         `json:"found"`
+		News  []news.Item `json:"news"`
+	}{
+		Found: len(items),
+		News:  items,
+	}
+
+	b, err := json.Marshal(res)
 	if err != nil {
 		handleError(w, err, http.StatusInternalServerError)
 		return
