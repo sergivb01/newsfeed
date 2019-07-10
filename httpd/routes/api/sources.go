@@ -12,7 +12,7 @@ func HandleSources(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(items)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err, http.StatusInternalServerError)
 		return
 	}
 

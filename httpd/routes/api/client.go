@@ -8,11 +8,11 @@ import (
 )
 
 func HandleClient(w http.ResponseWriter, r *http.Request) {
-	items := client.CLI
+	client := client.CLI
 
-	b, err := json.Marshal(items)
+	b, err := json.Marshal(client)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, err, http.StatusInternalServerError)
 		return
 	}
 
